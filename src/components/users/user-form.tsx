@@ -51,8 +51,10 @@ export function UserForm({ user, isNew = false }: Props) {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
+      const protocol = window.location.protocol;
+      const host = window.location.host;
       const res = await fetch(
-        isNew ? "/api/users" : `/api/users/${user.id}`,
+        isNew ? `${protocol}//${host}/api/users` : `${protocol}//${host}/api/users/${encodeURIComponent(user.id)}`,
         {
           method: isNew ? "POST" : "PATCH",
           headers: {

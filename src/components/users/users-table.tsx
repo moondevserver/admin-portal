@@ -32,7 +32,11 @@ interface User {
 }
 
 async function getUsers(): Promise<User[]> {
-  const res = await fetch("/api/users");
+  const protocol = window.location.protocol;
+  const host = window.location.host;
+  const res = await fetch(`${protocol}//${host}/api/users`, {
+    cache: "no-store",
+  });
   if (!res.ok) {
     throw new Error("Failed to fetch users");
   }
@@ -74,7 +78,9 @@ export function UsersTable() {
     if (!confirm("정말 삭제하시겠습니까?")) return;
     
     try {
-      const res = await fetch(`/api/users/${userId}`, {
+      const protocol = window.location.protocol;
+      const host = window.location.host;
+      const res = await fetch(`${protocol}//${host}/api/users/${encodeURIComponent(userId)}`, {
         method: "DELETE",
       });
       

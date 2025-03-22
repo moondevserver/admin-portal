@@ -3,6 +3,7 @@ import { UserForm } from "@/components/users/user-form";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { headers } from "next/headers";
 
 export const metadata: Metadata = {
   title: "회원 정보",
@@ -16,7 +17,14 @@ interface Props {
 }
 
 async function getUser(id: string) {
-  const res = await fetch(`/api/users/${id}`);
+  const headersList = headers();
+  const host = headersList.get("host");
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+  
+  const res = await fetch(`${protocol}://${host}/api/users/${encodeURIComponent(id)}`, {
+    cache: "no-store",
+  });
+  
   if (!res.ok) {
     throw new Error("Failed to fetch user");
   }
@@ -24,7 +32,7 @@ async function getUser(id: string) {
 }
 
 export default async function UserPage({ params }: Props) {
-  const user = await getUser(params.id);
+  const user = await getUser(await Promise.resolve(params.id));
 
   return (
     <div className="flex flex-col gap-5 p-8">
